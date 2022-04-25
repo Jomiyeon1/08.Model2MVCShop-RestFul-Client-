@@ -50,7 +50,9 @@ public class RestHttpClientApp {
 
 //		System.out.println("\n====================================\n");
 //		// 1.2 addProduct GET => Codehaus
-		RestHttpClientApp.addProductTest_Codehaus();
+//		RestHttpClientApp.addProductTest_Codehaus();
+//		RestHttpClientApp.getProductTest_JsonSimple();
+		RestHttpClientApp.getProductTest_Codehaus();
 
 	}
 
@@ -321,7 +323,7 @@ public class RestHttpClientApp {
 		// ==> InputStream 생성
 		InputStream is = httpEntity.getContent();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-
+		
 
 		// ==> API 확인 : Stream 객체를 직접 전달
 		JSONObject jsonobj = (JSONObject) JSONValue.parse(br);
@@ -330,5 +332,81 @@ public class RestHttpClientApp {
 		Product product = objectMapper.readValue(jsonobj.toString(), Product.class);
 		System.out.println(product);
 	}
+	
+	
+	///////////get product
+	public static void getProductTest_JsonSimple() throws Exception {
 
+		// HttpClient : Http Protocol 의 client 추상화
+		HttpClient httpClient = new DefaultHttpClient();
+
+		String url = "http://127.0.0.1:8080/product/json/getProduct/10000";
+
+		// HttpGet : Http Protocol 의 GET 방식 Request
+		HttpGet httpGet = new HttpGet(url);
+		httpGet.setHeader("Accept", "application/json");
+		httpGet.setHeader("Content-Type", "application/json");
+
+		// HttpResponse : Http Protocol 응답 Message 추상화
+		HttpResponse httpResponse = httpClient.execute(httpGet);
+
+		// ==> Response 확인
+		System.out.println(httpResponse);
+		System.out.println();
+
+		// ==> Response 중 entity(DATA) 확인
+		HttpEntity httpEntity = httpResponse.getEntity();
+
+		// ==> InputStream 생성
+		InputStream is = httpEntity.getContent();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+		System.out.println("[ Server 에서 받은 Data 확인 ] ");
+		String serverData = br.readLine();
+		System.out.println(serverData);
+
+		// ==> 내용읽기(JSON Value 확인)
+		JSONObject jsonobj = (JSONObject) JSONValue.parse(serverData);
+		System.out.println(jsonobj);
+	}
+
+	public static void getProductTest_Codehaus() throws Exception {
+
+		// HttpClient : Http Protocol 의 client 추상화
+		HttpClient httpClient = new DefaultHttpClient();
+
+		String url = "http://127.0.0.1:8080/product/json/getProduct/10000";
+
+		// HttpGet : Http Protocol 의 GET 방식 Request
+		HttpGet httpGet = new HttpGet(url);
+		httpGet.setHeader("Accept", "application/json");
+		httpGet.setHeader("Content-Type", "application/json");
+
+		// HttpResponse : Http Protocol 응답 Message 추상화
+		HttpResponse httpResponse = httpClient.execute(httpGet);
+
+		// ==> Response 확인
+		System.out.println(httpResponse);
+		System.out.println();
+
+		// ==> Response 중 entity(DATA) 확인
+		HttpEntity httpEntity = httpResponse.getEntity();
+
+		// ==> InputStream 생성
+		InputStream is = httpEntity.getContent();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+		// ==> 다른 방법으로 serverData 처리
+		// System.out.println("[ Server 에서 받은 Data 확인 ] ");
+		// String serverData = br.readLine();
+		// System.out.println(serverData);
+
+		// ==> API 확인 : Stream 객체를 직접 전달
+		JSONObject jsonobj = (JSONObject) JSONValue.parse(br);
+		System.out.println(jsonobj);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		Product product = objectMapper.readValue(jsonobj.toString(), Product.class);
+		System.out.println(product);
+	}
 }

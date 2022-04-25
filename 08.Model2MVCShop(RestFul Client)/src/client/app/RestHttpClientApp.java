@@ -253,10 +253,10 @@ public class RestHttpClientApp {
 				httpPost.setHeader("Content-Type", "application/json");
 
 				JSONObject json = new JSONObject();
-				json.put("prodName", "보르도");
+				json.put("prodName", "0425테스트");
 				json.put("prodDetail", "자전거");
-				json.put("manuDate", "20220424");
-				json.put("price", "10000");
+				json.put("manuDate", "2022-04-24");
+				json.put("price", 10000);
 				HttpEntity httpEntity01 = new StringEntity(json.toString(), "utf-8");
 				
 				System.out.println(json);
@@ -296,17 +296,16 @@ public class RestHttpClientApp {
 		httpPost.setHeader("Content-Type", "application/json");
 
 		Product product01 = new Product();
-		product01.setProdName("리들리");
+		product01.setProdName("0425테스트...");
 		product01.setProdDetail("라이딩 1000회"); 
-		product01.setManuDate("20150506");
-		product01.setPrice(2500000);
+		product01.setManuDate("2015-05-06");
+		product01.setPrice(12000);
 		ObjectMapper objectMapper01 = new ObjectMapper();
 		// Object ==> JSON Value 로 변환
 		String jsonValue = objectMapper01.writeValueAsString(product01);
 		
 
 		System.out.println("//"+jsonValue);
-
 		HttpEntity httpEntity01 = new StringEntity(jsonValue, "utf-8");
 
 		httpPost.setEntity(httpEntity01);
@@ -326,8 +325,6 @@ public class RestHttpClientApp {
 
 		// ==> API 확인 : Stream 객체를 직접 전달
 		JSONObject jsonobj = (JSONObject) JSONValue.parse(br);
-		System.out.println(jsonobj);
-
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		Product product = objectMapper.readValue(jsonobj.toString(), Product.class);

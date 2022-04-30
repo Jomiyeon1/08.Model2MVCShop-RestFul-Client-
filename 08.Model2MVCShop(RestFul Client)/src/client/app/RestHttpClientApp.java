@@ -3,6 +3,7 @@ package client.app;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -61,8 +62,8 @@ public class RestHttpClientApp {
 //		RestHttpClientApp.updateProductTestP_JsonSimple();
 //		RestHttpClientApp.updateProductTestP_Codehaus();
 //		RestHttpClientApp.updateProductTestG_JsonSimple();
-		RestHttpClientApp.listProductTest_JsonSimple();
-		
+//		RestHttpClientApp.listProductTest_JsonSimple();
+		RestHttpClientApp.listProductTest_Codehaus();
 		
 	}
 
@@ -688,12 +689,54 @@ public class RestHttpClientApp {
 		httpPost.setHeader("Accept", "application/json");
 		httpPost.setHeader("Content-Type", "application/json");
 		
-		Search search = new Search();
+
 		JSONObject json = new JSONObject();
-		json.put("search", search);
 		HttpEntity httpEntity01 = new StringEntity(json.toString(), "utf-8");
+
+
+		httpPost.setEntity(httpEntity01);
+		HttpResponse httpResponse = httpClient.execute(httpPost);
+
+		// ==> Response 확인
+		System.out.println(httpResponse);
+		System.out.println();
+
+		// ==> Response 중 entity(DATA) 확인
+		HttpEntity httpEntity = httpResponse.getEntity();
+
+		// ==> InputStream 생성		
+		 InputStream is = httpEntity.getContent();
+		 BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+
+
+		System.out.println("[ Server 에서 받은 Data 확인 ] ");
+		String serverData = br.readLine();
+		System.out.println(serverData);
+
+		// ==> 내용읽기(JSON Value 확인)
+		JSONObject jsonobj = (JSONObject) JSONValue.parse(serverData);
+		System.out.println(jsonobj);
+		}
+	
+	public static void listProductTest_Codehaus() throws Exception {
+
+		// HttpClient : Http Protocol 의 client 추상화
+		HttpClient httpClient = new DefaultHttpClient();
+
+		String url = "http://127.0.0.1:8080/product/json/listProduct";
+		HttpPost httpPost = new HttpPost(url);
+		httpPost.setHeader("Accept", "application/json");
+		httpPost.setHeader("Content-Type", "application/json");
+
 		
-		System.out.println(json);
+		
+		ObjectMapper objectMapper01 = new ObjectMapper();
+		// Object ==> JSON Value 로 변환
+		String jsonValue = objectMapper01.writeValueAsString(new Search());
+		
+
+		System.out.println("//"+jsonValue);
+		HttpEntity httpEntity01 = new StringEntity(jsonValue, "utf-8");
 
 		httpPost.setEntity(httpEntity01);
 		HttpResponse httpResponse = httpClient.execute(httpPost);
@@ -706,16 +749,15 @@ public class RestHttpClientApp {
 		HttpEntity httpEntity = httpResponse.getEntity();
 
 		// ==> InputStream 생성
-		InputStream is = httpEntity01.getContent();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is,"utf-8"));
+		InputStream is = httpEntity.getContent();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+		
 
-		System.out.println("[ Server 에서 받은 Data 확인 ] ");
-		String serverData = br.readLine();
-		System.out.println(serverData);
+		// ==> API 확인 : Stream 객체를 직접 전달
+		JSONObject jsonobj = (JSONObject) JSONValue.parse(br);
 
-		// ==> 내용읽기(JSON Value 확인)
-		JSONObject jsonobj = (JSONObject) JSONValue.parse(serverData);
-		System.out.println(jsonobj);
-		}
-	
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map map = objectMapper.readValue(jsonobj.toString(), Map.class);
+		System.out.println(map);
+	}
 }// end class
